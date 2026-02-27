@@ -1,0 +1,262 @@
+import React, { useEffect, useState } from "react";
+import {
+  useDeleteProductByIdMutation,
+  useGetProductByIdQuery,
+  useGetProductsByQueryQuery,
+  useGetProductsMetricsQuery,
+  useGetProductsQuery,
+  useLazyGetProductByIdQuery,
+  usePostProductMutation,
+  usePrintProductLabelMutation,
+  usePutProductByIdMutation,
+} from "../../redux/slices/ApiSlice";
+import { ProductModal } from "../../components/Products/ProductModal";
+import { BarcodeField } from "../../components/BarcodeField";
+import { KPI } from "../../components/Metric/KPI";
+import { Filters } from "../../assets/Buttons/Filters";
+import { Plus } from "../../assets/Buttons/Plus";
+import { FiltersModal } from "../../components/Filters/FiltersModal";
+import { Table } from "../../components/Table";
+import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast, ToastContainer } from "react-toastify";
+import { productColumn } from "../../components/Products/products.column";
+import { MainButton } from "../../components/Buttons";
+import { SearchIcon } from "../../assets/Navigation/SearchIcon";
+
+export const Products = () => {
+  const { t } = useTranslation();
+  const [limit, setLimit] = useState(100);
+  const { data: metricData } = useGetProductsMetricsQuery();
+  const [searchParams] = useSearchParams();
+  const sort = searchParams.get("name");
+  const {
+    data,
+    isLoading,
+    refetch: ProductsRefetch,
+  } = useGetProductsQuery({ page: 1, sort, limit });
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const [query, setQuery] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [editForm, setEditForm] = useState(null);
+  const {
+    data: searchedProducts,
+    isLoading: SearchLoading,
+    refetch: searchRefetch,
+  } = useGetProductsByQueryQuery(query, {
+    skip: !query || query.length < 3,
+  });
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const { data: editedProduct, refetch } = useGetProductByIdQuery(editId, {
+    skip: !editId,
+  });
+  const [trigger] = useLazyGetProductByIdQuery();
+  const [deleteProduct] = useDeleteProductByIdMutation();
+
+  const [putProduct] = usePutProductByIdMutation();
+  const [postProduct] = usePostProductMutation();
+
+  const [printProductLabel] = usePrintProductLabelMutation();
+
+  const [input, setInput] = useState("");
+
+  const handleQuery = (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter") {
+      setQuery(input);
+    }
+  };
+
+  const handleClosePopUp = () => {
+    setEditForm(null);
+    setEditId(null);
+    setShowProductModal(false);
+  };
+  useEffect(() => {
+    if (query && query.length > 2) {
+      setFilteredProducts(searchedProducts);
+    } else if (data && !isLoading) {
+      setFilteredProducts(data);
+    }
+  }, [query, searchedProducts, data, isLoading, sort]);
+
+  useEffect(() => {
+    if (editedProduct) {
+      setEditForm(editedProduct);
+    }
+  }, [editedProduct]);
+
+  const handleEditProduct = async (id) => {
+    try {
+      if (editId === id) {
+        await refetch(); // Asenkron işlemi bekle
+        setShowProductModal(true);
+      } else {
+        setEditId(id);
+        setShowProductModal(true);
+      }
+    } catch (error) {
+      console.error("Refetch hatası:", error);
+    }
+  };
+
+  const handleDeleteProduct = async (id) => {
+    try {
+      await deleteProduct(id).unwrap();
+      await ProductsRefetch();
+      setFilteredProducts(data);
+      setShowProductModal(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleBarcode = async (barcode) => {
+    try {
+      const res = await trigger(barcode).unwrap();
+      console.log(res);
+      setEditId(barcode);
+      setEditForm(res);
+      setShowProductModal(true);
+    } catch (error) {
+      setEditForm({ barcode: barcode });
+      setShowProductModal(true);
+      console.log(error);
+    }
+  };
+
+  const handleUpdateProduct = async (data) => {
+    try {
+      await putProduct(data).unwrap();
+      setShowProductModal(false);
+      setEditId(null);
+      setEditForm(null);
+      ProductsRefetch();
+      searchRefetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAddProduct = async (data) => {
+    try {
+      await postProduct(data).unwrap();
+      setShowProductModal(false);
+      ProductsRefetch();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handlePrintProductLabel = async (product) => {
+    try {
+      const response = await printProductLabel({ barcode: product }).unwrap();
+      if (response) {
+        toast.success("Yazdırma işlemi başarılı!");
+      }
+    } catch (error) {
+      toast.error("Yazdırma işlemi başarısız!");
+      console.error("Yazdırma hatası:", error);
+    }
+  };
+
+  return (
+    <div className="w-full h-full flex flex-col gap-2 min-h-0 ">
+      {showProductModal && (
+        <ProductModal
+          isOpen={showProductModal}
+          handleClose={handleClosePopUp}
+          editForm={editForm}
+          isEditMode={editId ? true : false}
+          handleDelete={handleDeleteProduct}
+          handleUpdateProduct={handleUpdateProduct}
+          handleAddProduct={handleAddProduct}
+        />
+      )}
+      <ToastContainer />
+      <KPI
+        data={[
+          {
+            label: t("totalProduct"),
+            value: metricData?.totalProducts,
+          },
+          {
+            label: t("WeightBasedProducts"),
+            value: metricData?.kgBasedProducts,
+          },
+          {
+            label: t("UnitBasedProducts"),
+            value: metricData?.pieceBasedProducts,
+          },
+          {
+            label: t("Ümumi Anbar Dəyəri"),
+            value: metricData?.totalStock,
+          },
+        ]}
+      />
+      <div className="flex flex-col gap-2 w-full h-full min-h-0  bg-white rounded-lg px-4 py-2 ">
+        <div className="flex gap-2 items-center">
+          <div className="flex items-center  w-full ">
+            <SearchIcon className={"size-6"} />
+            <input
+              type="text"
+              placeholder="Məhsul axtar..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => handleQuery(e)}
+              className=" w-full max-md:px-8  py-2 rounded-lg bg-white focus:outline-blue-500 px-2"
+              style={{ backgroundColor: "#ffffff" }}
+            />
+          </div>
+          <div className="flex  relative ">
+            <BarcodeField
+              handleBarcode={handleBarcode}
+              shouldFocus={!showProductModal}
+            />
+            <button
+              onClick={() => setShowFiltersModal(!showFiltersModal)}
+              className="border bg-white border-gray-200 rounded-xl text-nowrap px-4 max-md:px-2 cursor-pointer flex max-md:text-xs items-center gap-2 py-1 max-md:py-0"
+            >
+              <Filters className="max-md:size-5" />
+              {t("filters")}
+            </button>
+            {showFiltersModal && (
+              <FiltersModal
+                handleClose={setShowFiltersModal}
+                // handleFilter={handleFilter}
+              />
+            )}
+          </div>
+          <MainButton
+            handleClick={() => setShowProductModal(true)}
+            title={"addProduct"}
+            type="create"
+          />
+        </div>
+
+        <div className="min-h-0  w-full  flex justify-center flex-col items-center gap-1">
+          <Table
+            // path={"/products"}
+            columns={productColumn({
+              t,
+              editProduct: handleEditProduct,
+              printProduct: handlePrintProductLabel,
+              deleteProduct: handleDeleteProduct,
+            })}
+            data={filteredProducts}
+            isLoading={isLoading}
+          />
+          {filteredProducts?.length > 50 && (
+            <button
+              onClick={() => setLimit(limit + 100)}
+              className="border border-mainBorder rounded-lg text-xs px-2 py-1 w-fit"
+            >
+              Daha Cox
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};

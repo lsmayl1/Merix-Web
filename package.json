@@ -1,0 +1,20 @@
+{
+  "name": "merix",
+  "version": "1.0.0",
+  "description": "Merix Pos System",
+  "productName": "Merix",
+  "author": {
+    "name": "ismayil"
+  },
+  "scripts": {
+    "build": "npm run build --prefix frontend",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
+    "resetDb": "npm run resetDb --prefix backend"
+  },
+ 
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+  
+}

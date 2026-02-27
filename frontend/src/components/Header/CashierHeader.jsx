@@ -1,0 +1,88 @@
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
+import { logout } from "../../redux/slices/auth/authService";
+import Reports from "../../assets/Sidebar/Reports";
+import { Kart } from "../../assets/Sidebar/Kart";
+import Logo from "../../assets/Logo/LogoMain";
+import { Logout } from "../../assets/Buttons/Logout";
+
+export const CashierHeader = ({ className }) => {
+  const { t } = useTranslation();
+  const role = "admin";
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const links = [
+    {
+      name: t("reports"),
+      blank: false,
+      icon: <Reports />,
+      path: "shift-report",
+      roles: ["admin", "user"],
+    },
+
+    {
+      name: t("pos"),
+      blank: true,
+      path: "pos",
+      icon: <Kart />,
+      roles: ["admin", "user"],
+    },
+  ];
+  const [collapsed, setCollapsed] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+  return (
+    <div
+      className={`max-md:absolute flex-col bg-white h-full items-center border-r-gray-100 py-4 border-r z-50 gap-8 max-md:left-0 max-md:bg-white  flex  px-4 ${className}
+      `}
+    >
+      <div
+        className={`flex items-center gap-2 ${collapsed ? "justify-center" : ""}`}
+      >
+        <Logo className="size-10" />
+      </div>
+      <ul className={`flex flex-col   gap-2 w-full`}>
+        {links
+          .filter((item) => item.roles.includes(role))
+          .map((link, index) => (
+            <div className="flex flex-col gap-1  " key={index}>
+              <NavLink
+                to={link.path}
+                className={({ isActive }) =>
+                  `flex w-fit items-center gap-4 border-mainBorder py-2 ${
+                    isActive
+                      ? "bg-[#0f172a] border border-mainBorder"
+                      : "hover:bg-white"
+                  } px-2 rounded-lg transition-colors duration-200`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    {link.icon &&
+                      React.cloneElement(link.icon, {
+                        className: ` size-7 max-md:size-6 ${
+                          !isActive ? "text-black" : "text-white"
+                        } `,
+                      })}
+                  </>
+                )}
+              </NavLink>
+            </div>
+          ))}
+      </ul>
+      <div className="h-full flex items-end pb-4 ">
+        <button
+          onClick={handleLogout}
+          className=" bg-red-500 text-white text-sm p-2 rounded-lg text-nowrap flex gap-2 items-center"
+        >
+          <Logout />
+        </button>
+      </div>
+    </div>
+  );
+};
