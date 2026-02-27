@@ -5,7 +5,7 @@ const stockTransactionsRoute = require("../modules/product/stockTransactions.con
 const cashTransactionsRoute = require("../modules/accounting/cashTransactions.controller");
 const metricsRoute = require("../modules/metric/metric.controller");
 const pluRoute = require("../modules/plu/plu.controller");
-const printerRoute = require("../modules/printer/printer.controller");
+
 const reportsRoute = require("../modules/accounting/report.controller");
 const categoryRoute = require("../modules/category/category.controller");
 const supplierRoute = require("../modules/supplier/supplier.controller");
@@ -30,7 +30,6 @@ const router = (app) => {
   app.use("/api/cash-transactions", cashTransactionsRoute);
   app.use("/api/metrics", metricsRoute);
   app.use("/api/plu", pluRoute);
-  app.use("/api/printer", printerRoute);
   app.use("/api/reports", reportsRoute);
   app.use("/api/category", categoryRoute);
   app.use("/api/suppliers", supplierRoute);

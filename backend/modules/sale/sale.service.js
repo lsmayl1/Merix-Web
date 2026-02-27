@@ -10,7 +10,6 @@ const {
   SaleReturns,
 } = require("../../models");
 const AppError = require("../../utils/AppError");
-const { PrintReceipt } = require("../printer/printer.service");
 const moment = require("moment");
 const { consumeStockFIFO } = require("../product/stockBatch.service");
 
@@ -149,19 +148,6 @@ const createSale = async (data) => {
       await SalePayments.bulkCreate(paymentRows, { transaction: t });
 
       return { sale, totalCost };
-    });
-
-    // ✅ Transaction dışı fiş yazdırma
-    PrintReceipt({
-      date: moment().tz("Asia/Dubai").format("DD-MM-YYYY HH:mm:ss"),
-      details: receiptDetails.map((d) => ({
-        ...d,
-        subtotal: d.subtotal.toFixed(2),
-      })),
-      payments,
-      totalAmount: totalAmount.toFixed(2),
-      discountAmount: discountedAmount.toFixed(2),
-      transactionType: "sale",
     });
 
     return {
