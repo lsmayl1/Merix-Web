@@ -9,6 +9,10 @@ export const userApiSlice = createApi({
       query: () => "/user/",
       keepUnusedDataFor: 0,
     }),
+    getSessionData: build.query({
+      query: () => "/user/me",
+      keepUnusedDataFor: 0,
+    }),
     createUser: build.mutation({
       query: (data) => ({
         url: "user/create",
@@ -29,4 +33,5 @@ export const {
   useCreateUserMutation,
   useGetAllUsersQuery,
   useDeleteUserMutation,
+  useGetSessionDataQuery,
 } = userApiSlice;

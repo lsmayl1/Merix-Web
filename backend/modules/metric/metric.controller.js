@@ -17,11 +17,14 @@ const { GetSupplierDebt } = require("../supplier/supplier.service");
 const { getProductMetricsById, getProductSales } = require("./metric.service");
 
 router.post("/sale", async (req, res) => {
+  const userId = req.user.id;
+
   const { from, to } = req.body;
 
   try {
     const sales = await Sales.findAll({
       where: {
+        user_id: userId,
         date: {
           [Op.between]: [from, to],
         },
@@ -112,7 +115,7 @@ router.get("/products", async (req, res) => {
 
     const stockBatches = await StockBatch.findAll({
       where: {
-        remainingQuantity: { [Op.gt]: 0 },
+        remainingQuantity: { [Op.ne]: 0 },
       },
     });
 
@@ -299,7 +302,7 @@ router.get("/bestSellers", async (req, res) => {
     // Kalan ürünleri bul (bestSeller olmayanlar)
     const bestSellerIds = bestSellers.map((item) => item.product_id);
 
-    // Stokları ProductStock tablosundan çek
+    // Tüm ürün ID'lerini al
     const allProductIds = [
       ...bestSellerIds,
       ...(
@@ -310,48 +313,29 @@ router.get("/bestSellers", async (req, res) => {
         })
       ).map((p) => p.product_id),
     ];
-    const productStocks = await ProductStock.findAll({
-      where: { product_id: allProductIds },
-      attributes: ["product_id", "current_stock"],
+
+    // StockBatch'lerden kalan miktarları topla
+    const stockBatches = await StockBatch.findAll({
+      where: { productId: allProductIds, remainingQuantity: { [Op.ne]: 0 } },
+      attributes: ["productId", "remainingQuantity"],
       raw: true,
     });
+
+    // Her ürün için stok miktarını hesapla (remainingQuantity toplamı)
     const stockMap = {};
-    productStocks.forEach((s) => {
-      stockMap[s.product_id] = s.current_stock;
+    stockBatches.forEach((batch) => {
+      const qty = Number(batch.remainingQuantity) || 0;
+      stockMap[batch.productId] = (stockMap[batch.productId] || 0) + qty;
     });
 
-    // Kalan ürünleri bul (bestSeller olmayanlar)
-    const restProducts = await Products.findAll({
-      where: {
-        product_id: { [Op.notIn]: bestSellerIds },
-      },
-      order: [["product_id", "ASC"]],
-      limit: 20,
-      attributes: ["product_id", "name", "barcode"],
-      raw: true,
-    });
-
-    // restProducts'a sold alanı ekle (0 olarak) ve stock ekle
-    const restProductsWithSold = restProducts.map((item) => ({
-      ...item,
-      sold: 0,
+    // Sonuçları birleştir - yalnız best sellers
+    const result = bestSellers.map((item) => ({
+      product_id: item.product_id,
+      name: item.product.name,
+      barcode: item.product.barcode,
+      sold: Number(item.sold),
       stock: stockMap[item.product_id] ?? 0,
     }));
-
-    // Sonuçları birleştir
-    const result = [
-      ...bestSellers.map((item) => ({
-        product_id: item.product_id,
-        name: item.product.name,
-        barcode: item.product.barcode,
-        sold: Number(item.sold),
-        stock: stockMap[item.product_id] ?? 0,
-      })),
-      ...restProductsWithSold,
-    ];
-
-    // Tümünü tekrar stok miktarına göre azdan çoğa sırala
-    result.sort((a, b) => a.stock - b.stock);
 
     res.json(result);
   } catch (error) {

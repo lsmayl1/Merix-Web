@@ -32,14 +32,13 @@ export const ReportsLayout = () => {
               to={tb.path}
               key={index}
               className={({ isActive }) =>
-                `${isActive ? "bg-[#0f172a] text-white" : ""} text-nowrap py-2 px-4 rounded-lg`
+                `${isActive ? "bg-[#0f172a] text-white" : ""} text-nowrap py-1 px-4 text-sm rounded-lg`
               }
             >
               <span></span> {tb.name}
             </NavLink>
           ))}
         </ul>
-        <DateRange />
       </div>
       <Outlet />
     </div>

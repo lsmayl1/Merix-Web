@@ -29,13 +29,13 @@ export const Sidebar = ({ className, handleClose }) => {
       icon: <Dashboard />,
       roles: ["admin"],
     },
-    {
-      name: t("products"),
-      blank: false,
-      path: "products",
-      icon: <Box />,
-      roles: ["admin"],
-    },
+    // {
+    //   name: t("products"),
+    //   blank: false,
+    //   path: "products",
+    //   icon: <Box />,
+    //   roles: ["admin"],
+    // },
     // {
     //   name: t("stockMovements"),
     //   blank: false,
@@ -50,13 +50,13 @@ export const Sidebar = ({ className, handleClose }) => {
       path: "reports",
       roles: ["admin", "user"],
     },
-    {
-      name: t("supplier"),
-      blank: true,
-      path: "supplier/all",
-      icon: <Suppliers />,
-      roles: ["admin"],
-    },
+    // {
+    //   name: t("supplier"),
+    //   blank: true,
+    //   path: "supplier/all",
+    //   icon: <Suppliers />,
+    //   roles: ["admin"],
+    // },
     // {
     //   name: t("employye"),
     //   path: "employee",
@@ -92,10 +92,6 @@ export const Sidebar = ({ className, handleClose }) => {
     }
   }, [path, width]);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
-  };
   return (
     <div
       className={` bg-white border-r-gray-100 border-r z-50 gap-8 max-md:left-0 max-md:bg-white  flex  pt-8 h-screen   flex-col px-4 max-md:px-2 ${className}
@@ -136,7 +132,7 @@ export const Sidebar = ({ className, handleClose }) => {
                     <span
                       className={`${
                         !isActive ? "text-black" : "text-white"
-                      } text-md max-md:text-md font-medium text-nowrap`}
+                      } text-md font-poppins max-md:text-md font-medium text-nowrap`}
                     >
                       {link.name}
                     </span>
@@ -147,14 +143,6 @@ export const Sidebar = ({ className, handleClose }) => {
           </div>
         ))}
       </ul>
-      <div className="h-full flex items-end pb-4 ">
-        <button
-          onClick={handleLogout}
-          className=" bg-red-500 text-white text-sm p-2 rounded-lg text-nowrap flex gap-2 items-center"
-        >
-          <Logout />
-        </button>
-      </div>
     </div>
   );
 };

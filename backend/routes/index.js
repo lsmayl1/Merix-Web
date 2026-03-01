@@ -21,19 +21,23 @@ const router = (app) => {
   app.use("/api/products", productsRoute);
   app.use("/api/stock-batches", stockBatchRoute);
   app.use("/api/shift", authMiddleware, shiftRoute);
-  app.use("/api/user", userRoute);
+  app.use("/api/user", authMiddleware, userRoute);
   app.use("/api/auth", authRoute);
   app.use("/api/product-shortcuts", productShortCutRoute);
   app.use("/api/categories", categoriesRoute);
   app.use("/api/sales", authMiddleware, salesRoute);
   app.use("/api/stock-transactions", stockTransactionsRoute);
   app.use("/api/cash-transactions", cashTransactionsRoute);
-  app.use("/api/metrics", metricsRoute);
+  app.use("/api/metrics", authMiddleware, metricsRoute);
   app.use("/api/plu", pluRoute);
-  app.use("/api/reports", reportsRoute);
+  app.use("/api/reports", authMiddleware, reportsRoute);
   app.use("/api/category", categoryRoute);
-  app.use("/api/suppliers", supplierRoute);
-  app.use("/api/supplier-transactions", supplierTransactionsRoute);
+  app.use("/api/suppliers", authMiddleware, supplierRoute);
+  app.use(
+    "/api/supplier-transactions",
+    authMiddleware,
+    supplierTransactionsRoute,
+  );
 };
 
 module.exports = router;

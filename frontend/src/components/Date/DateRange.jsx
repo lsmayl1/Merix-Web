@@ -50,9 +50,9 @@ export const DateRange = () => {
     setShowDateModal(false);
   };
   return (
-    <div className="flex w-full gap-4 justify-end  items-center max-md:justify-between">
+    <div className="flex  gap-4 justify-end flex-row-reverse  items-center max-md:justify-between">
       {startFormatted && endFormatted ? (
-        <h1 className="text-xl max-md:text-xs font-medium text-black">
+        <h1 className="text-md max-md:text-xs font-medium text-black">
           {`${startFormatted.day} ${startFormatted.month} - ${endFormatted.day} ${endFormatted.month} `}
           {startFormatted.year === endFormatted.year ? (
             <span className="text-md text-mainText max-md:text-xs">
@@ -73,19 +73,19 @@ export const DateRange = () => {
           onClick={() => setShowDateModal(!showDateModal)}
           className="flex gap-4 max-md:text-xs items-center bg-white py-2 px-4 rounded-md border border-mainBorder text-md"
         >
-          <Calendar className={"max-md:size-3"} />
+          <Calendar className={"max-md:size-3 size-4"} />
 
-          {selectedRangeName}
+          <span className="text-xs">{selectedRangeName}</span>
         </button>
         {showDateModal && (
-          <div className="flex bg-white shadow-2xl absolute top-12 z-50 rounded-md w-[140%] right-24">
+          <div className="flex bg-white shadow-2xl absolute top-12 z-50 rounded-md w-[140%] right--6">
             <div className="flex flex-col gap-12 flex-1 justify-between border-r border-mainBorder">
               <ul className="flex flex-col text-black w-full p-2">
                 {range.map((rg, index) => (
                   <li
                     onClick={() => handleSelect(rg)}
                     key={index}
-                    className="hover:bg-gray-100  max-md:text-xs  text-md p-4  w-full text-nowrap rounded-md cursor-pointer"
+                    className="hover:bg-gray-100   max-md:text-xs  text-xs p-2  w-full text-nowrap rounded-md cursor-pointer"
                   >
                     {rg.name}
                   </li>

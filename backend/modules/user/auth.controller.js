@@ -1,6 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { LoginUser, LoginCashier, CreateUser } = require("./authService");
+const {
+  LoginUser,
+  LoginCashier,
+  CreateUser,
+  GetSessionData,
+} = require("./auth.service");
 
 router.post("/register", async (req, res, next) => {
   try {
@@ -25,6 +30,8 @@ router.post("/login", async (req, res, next) => {
     next(error);
   }
 });
+
+
 
 router.post("/cashier-login", async (req, res, next) => {
   try {

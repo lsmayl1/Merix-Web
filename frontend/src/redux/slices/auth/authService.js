@@ -12,8 +12,10 @@ export const authService = createSlice({
   name: "authService",
   initialState: {
     token: getToken() || null,
-    role: getRole() || "admin",
+    role: getRole() || "user",
     // refreshToken: getToken() || null,
+    username: null,
+    email: null,
     isAuthenticated: !!getToken(),
   },
   reducers: {
@@ -32,9 +34,14 @@ export const authService = createSlice({
       state.isAuthenticated = false;
       deleteLocalToken();
     },
+    setUserData: (state, action) => {
+      const { username, email } = action.payload;
+      state.username = username;
+      state.email = email;
+    },
   },
 });
 
-export const { setCredentials, logout } = authService.actions;
+export const { setCredentials, logout, setUserData } = authService.actions;
 
 export default authService.reducer;

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./style/index.css";
-import { Navigate, Route, Router, Routes } from "react-router-dom";
+import { Navigate, Route, Router, Routes, useNavigate } from "react-router-dom";
 import { Dashboard } from "./pages/Dashboard";
 import { Layout } from "./components/layout/Layout";
 import { SalesReports } from "./pages/Reports/SalesReports";
@@ -26,7 +26,35 @@ import { Invoice } from "./assets/Navigation/Invoice";
 import { Invoices } from "./pages/Suppliers/Invoices";
 import { ProductDetails } from "./components/Products/productDetails";
 import { ProductSaleList } from "./components/Products/productDetails/productSaleList";
+import { useDispatch, useSelector } from "react-redux";
+import { useGetSessionDataQuery } from "./redux/slices/user/userApiSlice";
+import { setUserData } from "./redux/slices/auth/authService";
 export const App = () => {
+  const { token } = useSelector((state) => state.authService);
+  const dispatch = useDispatch();
+  const { data, isSuccess, isLoading, error, isError } = useGetSessionDataQuery(
+    undefined,
+    {
+      skip: !token,
+    },
+  );
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isSuccess && data && isLoading === false) {
+      dispatch(setUserData(data));
+    } else if (isError && error.data.message === "Invalid token") {
+      navigate("/login");
+    }
+  }, [data, isSuccess, error, isError]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <h1 className="font-poppins text-24">Loading...</h1>
+      </div>
+    );
+  }
+
   return (
     <Routes>
       <Route element={<PrivateRoute />}>

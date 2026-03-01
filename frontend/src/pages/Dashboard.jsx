@@ -42,9 +42,6 @@ export const Dashboard = () => {
 
   return (
     <div className="w-full h-screen  flex flex-col pr-2 max-md:gap-1 gap-2 min-h-0  ">
-      <div className="bg-white rounded-lg p-4 flex gap-4 items-center">
-        <DateRange />
-      </div>
       <div className="flex items-center gap-2 w-full">
         <KPI
           data={[
@@ -93,8 +90,8 @@ export const Dashboard = () => {
           </div>
         )}
         <div className="w-full overflow-hidden flex flex-1  flex-col min-h-0 rounded-lg  bg-white ">
-          <h1 className="p-2 text-md text-mainText font-medium">
-            Azalan məhsullar
+          <h1 className="p-2 text-flg text-mainText font-medium">
+            Ən çox satılan məhsullar
           </h1>
           <div className="overflow-hidden px-2">
             <StockOverview />

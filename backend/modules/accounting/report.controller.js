@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { Sales, Op, SalesDetails, Products } = require("../../models");
+const { Sales, Op, SaleDetails, Products } = require("../../models");
 
 router.post("/", async (req, res) => {
   try {
+    const userId = req.user.id;
     const { from, to } = req.body;
 
     // Parse the from date explicitly
@@ -20,13 +21,14 @@ router.post("/", async (req, res) => {
     // Fetch sales with their details
     const sales = await Sales.findAll({
       where: {
+        user_id: userId,
         date: {
           [Op.between]: [fromDate, toDate],
         },
       },
       include: [
         {
-          model: SalesDetails,
+          model: SaleDetails,
           as: "details",
           attributes: ["quantity", "sell_price", "buy_price"],
         },
@@ -90,6 +92,7 @@ router.post("/", async (req, res) => {
 
 router.post("/sales", async (req, res) => {
   try {
+    const userId = req.user.id;
     const { from, to } = req.body;
 
     // Tarih validasyonu
@@ -103,10 +106,10 @@ router.post("/sales", async (req, res) => {
 
     // Veritabanı sorgusu
     const sales = await Sales.findAll({
-      where: { date: { [Op.between]: [fromDate, toDate] } },
+      where: { date: { [Op.between]: [fromDate, toDate] }, user_id: userId },
       include: [
         {
-          model: SalesDetails,
+          model: SaleDetails,
           as: "details",
           attributes: ["quantity", "sell_price", "buy_price"],
         },
@@ -148,6 +151,7 @@ router.post("/sales", async (req, res) => {
 router.post("/sold-products", async (req, res) => {
   try {
     const { from, to } = req.body;
+    const userId = req.user.id;
 
     // Tarihleri parse et
     const fromDate = new Date(from);
@@ -163,13 +167,14 @@ router.post("/sold-products", async (req, res) => {
     // Satışları veritabanından çek
     const sales = await Sales.findAll({
       where: {
+        user_id: userId,
         date: {
           [Op.between]: [fromDate, toDate],
         },
       },
       include: [
         {
-          model: SalesDetails,
+          model: SaleDetails,
           as: "details",
           attributes: ["quantity", "sell_price", "buy_price"],
           include: [
@@ -257,10 +262,13 @@ router.post("/sold-products", async (req, res) => {
 });
 router.get("/turnover-per-month", async (req, res) => {
   try {
+    const userId = req.user.id;
+
     const currentYear = new Date().getFullYear();
 
     const sales = await Sales.findAll({
       where: {
+        user_id: userId,
         date: {
           [Op.between]: [
             new Date(`${currentYear}-01-01`),

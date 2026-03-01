@@ -1,4 +1,4 @@
-const { User, Op } = require("../../models");
+const { User, Op } = require("../../models/index.js");
 const AppError = require("../../utils/AppError.js");
 const joi = require("joi");
 const bcrypt = require("bcryptjs");
@@ -133,4 +133,21 @@ const LoginCashier = async (userData) => {
   }
 };
 
-module.exports = { CreateUser, LoginUser, LoginCashier };
+const GetSessionData = async (userId) => {
+  try {
+    if (!userId) {
+      throw new AppError("Id not found", 404);
+    }
+    const user = await User.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+    return user;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = { CreateUser, LoginUser, LoginCashier,GetSessionData };

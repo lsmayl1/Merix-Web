@@ -20,7 +20,7 @@ export const StockOverview = () => {
       header: "Qaliq",
       headerClassName: "text-center",
       cellClassName: "text-center text-flg",
-      cell: (info) => <span>{Number(info.getValue()).toFixed(2)}</span>,
+      // cell: (info) => <span>{Number(info.getValue()).toFixed(2)}</span>,
     }),
   ];
   return (

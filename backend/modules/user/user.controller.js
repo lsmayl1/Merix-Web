@@ -1,12 +1,17 @@
 const express = require("express");
-const {
-  createUser,
-  getAllUsers,
-  deleteUserById,
-} = require("./userService");
+const { createUser, getAllUsers, deleteUserById } = require("./userService");
+const { GetSessionData } = require("./auth.service");
 
 const router = express.Router();
 
+router.get("/me", async (req, res, next) => {
+  try {
+    const user = await GetSessionData(req.user.id);
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
 router.get("/", async (req, res, next) => {
   try {
     const users = await getAllUsers();
