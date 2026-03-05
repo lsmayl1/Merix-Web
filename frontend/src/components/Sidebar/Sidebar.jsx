@@ -29,13 +29,13 @@ export const Sidebar = ({ className, handleClose }) => {
       icon: <Dashboard />,
       roles: ["admin"],
     },
-    // {
-    //   name: t("products"),
-    //   blank: false,
-    //   path: "products",
-    //   icon: <Box />,
-    //   roles: ["admin"],
-    // },
+    {
+      name: t("products"),
+      blank: false,
+      path: "products",
+      icon: <Box />,
+      roles: ["admin"],
+    },
     // {
     //   name: t("stockMovements"),
     //   blank: false,
