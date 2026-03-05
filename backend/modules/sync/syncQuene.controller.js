@@ -1,9 +1,11 @@
 const express = require("express");
 const { createSale } = require("../sale/sale.service");
+const { CreateProduct } = require("../product/product.service");
 const Router = express.Router();
 
 Router.post("/", async (req, res, next) => {
   try {
+    const userId = req.user.id;
     const { entity, record_id, action, payload } = req.body;
     console.log(entity);
     if (!entity || !record_id || !action) {
@@ -21,7 +23,18 @@ Router.post("/", async (req, res, next) => {
         discounted_amount: payload.discountedAmount,
         type: payload.type,
         date: payload.date,
-        userId: payload.userId,
+        userId: userId,
+      });
+    } else if (entity === "products" && action === "create") {
+      await CreateProduct({
+        product_id: record_id,
+        name: payload.name,
+        barcode: payload.barcode,
+        sellPrice: payload.sellPrice,
+        buyPrice: payload.buyPrice,
+        unit: payload.unit,
+        user_id: userId,
+        category_id: null,
       });
     }
     res.status(200).json({ success: true, message: "Sync processed" });
