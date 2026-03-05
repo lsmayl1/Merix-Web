@@ -5,7 +5,6 @@ const Router = express.Router();
 
 Router.post("/", async (req, res, next) => {
   try {
-    const userId = req.user.id;
     const { entity, record_id, action, payload } = req.body;
     console.log(entity);
     if (!entity || !record_id || !action) {
