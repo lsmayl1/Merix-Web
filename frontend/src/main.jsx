@@ -7,10 +7,10 @@ import { Provider } from "react-redux";
 import { store } from "./redux/store.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <HashRouter>
+    <BrowserRouter>
       <Provider store={store}>
         <App />
       </Provider>
-    </HashRouter>
-  </StrictMode>
+    </BrowserRouter>
+  </StrictMode>,
 );

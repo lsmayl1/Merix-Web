@@ -40,7 +40,7 @@ const router = (app) => {
     supplierTransactionsRoute,
   );
 
-  app.use("/api/sync", authMiddleware, SyncController);
+  app.use("/api/sync", SyncController);
 };
 
 module.exports = router;

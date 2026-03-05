@@ -23,7 +23,7 @@ Router.post("/", async (req, res, next) => {
         discounted_amount: payload.discountedAmount,
         type: payload.type,
         date: payload.date,
-        userId: userId,
+        user_id: payload.user_id,
       });
     } else if (entity === "products" && action === "create") {
       await CreateProduct({
@@ -33,7 +33,7 @@ Router.post("/", async (req, res, next) => {
         sellPrice: payload.sellPrice,
         buyPrice: payload.buyPrice,
         unit: payload.unit,
-        user_id: userId,
+        user_id: payload.user_id,
         category_id: null,
       });
     }
