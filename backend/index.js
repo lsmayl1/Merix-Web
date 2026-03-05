@@ -25,12 +25,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-const port = 5000;
 sequelize
   .sync()
   .then(() => {
     app.listen(5000, "0.0.0.0", () => {
-      console.log(`Server is running on http://localhost:${port || 5000}`);
+      console.log(`Server is running on http://localhost:5000`);
     });
   })
   .catch((err) => {

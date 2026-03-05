@@ -15,6 +15,7 @@ const userRoute = require("../modules/user/user.controller");
 const authRoute = require("../modules/user/auth.controller");
 const shiftRoute = require("../modules/shift/shift.controller");
 const stockBatchRoute = require("../modules/product/stockBatch.controller");
+const SyncController = require("../modules/sync/syncQuene.controller");
 const authMiddleware = require("../modules/user/Jwt/auth.middleware");
 
 const router = (app) => {
@@ -38,6 +39,8 @@ const router = (app) => {
     authMiddleware,
     supplierTransactionsRoute,
   );
+
+  app.use("/api/sync", SyncController);
 };
 
 module.exports = router;
