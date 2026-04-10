@@ -9,10 +9,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ["react", "react-dom"],
   },
-  build: {
-    outDir: "../build", // 👈 bir üst dizine çıkarır
-    emptyOutDir: true, // eski dist varsa siler
-  },
+
   server: {
     proxy: {
       "/api": {
