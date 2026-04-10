@@ -29,37 +29,39 @@ import { ProductSaleList } from "./components/Products/productDetails/productSal
 import { useDispatch, useSelector } from "react-redux";
 import { useGetSessionDataQuery } from "./redux/slices/user/userApiSlice";
 import { setUserData } from "./redux/slices/auth/authService";
+import HomePage from "./pages/home";
 export const App = () => {
-  const { token } = useSelector((state) => state.authService);
-  const dispatch = useDispatch();
-  const { data, isSuccess, isLoading, error, isError } = useGetSessionDataQuery(
-    undefined,
-    {
-      skip: !token,
-    },
-  );
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (isSuccess && data && isLoading === false) {
-      dispatch(setUserData(data));
-    } else if (isError && error.data.message === "Invalid token") {
-      navigate("/login");
-    }
-  }, [data, isSuccess, error, isError]);
+  // const { token } = useSelector((state) => state.authService);
+  // const dispatch = useDispatch();
+  // const { data, isSuccess, isLoading, error, isError } = useGetSessionDataQuery(
+  //   undefined,
+  //   {
+  //     skip: !token,
+  //   },
+  // );
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   if (isSuccess && data && isLoading === false) {
+  //     dispatch(setUserData(data));
+  //   } else if (isError && error.data.message === "Invalid token") {
+  //     navigate("/login");
+  //   }
+  // }, [data, isSuccess, error, isError]);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <h1 className="font-poppins text-24">Loading...</h1>
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex h-screen w-full items-center justify-center">
+  //       <h1 className="font-poppins text-24">Loading...</h1>
+  //     </div>
+  //   );
+  // }
 
   return (
     <Routes>
       <Route element={<PrivateRoute />}>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/c" element={<Layout />}>
+          <Route path="dashboard" element={<Dashboard />} />
 
           <Route path="products" element={<Products />} />
           <Route path="products/:id" element={<ProductDetailsLayout />}>
